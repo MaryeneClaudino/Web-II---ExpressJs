@@ -35,10 +35,37 @@ app.get('/rota-protegida', verificaToken, (req, res) => {
 // curl -X GET -H "Authorization: Bearer 123Mudar" http://localhost:3000/rota-protegida
 
 // 4. ** Manipulação de Dados com Query Params **
-app.get('/usuarios', (req, res) => {
-    const { nome, cpf, telefone } = req.query;
+const usuarios = [
+    { nome: "Mary", cpf: "111.111.111-11", telefone: "53911111111" },
+    { nome: "Rafa", cpf: "222.222.222-22", telefone: "53922222222" },
+    { nome: "Alex", cpf: "333.333.333-33", telefone: "53933333333" },
+    { nome: "Manu", cpf: "444.444.444-44", telefone: "53944444444" },
+    { nome: "Can", cpf: "555.555.555-55", telefone: "53955555555" }
+]
 
-    res.send(`Listando usuários: Nome: ${nome}, CPF: ${cpf}, Telefone: ${telefone}`).end();
+app.get('/usuarios', (req, res) => {
+    const nome = req.query.nome;
+    const cpf = req.query.cpf;
+    const telefone = req.query.telefone;
+
+    let listaFiltrada = "";
+    let error = "Erro ao filtrar a lista. Você deve passar apenas um parâmetro (nome, telefone ou cpf) e com apenas um valor."
+
+    if ((nome != undefined && nome != null) && (cpf == null || cpf == undefined) && (telefone == null || telefone == undefined)) {
+        listaFiltrada = usuarios.filter(usuario => usuario.nome === nome);
+    } else if ((nome == undefined && nome == null) && (cpf != null || cpf != undefined) && (telefone == null || telefone == undefined)) {
+        listaFiltrada = usuarios.filter(usuario => usuario.cpf === cpf);
+    } else if ((nome == undefined && nome == null) && (cpf == null || cpf == undefined) && (telefone != null || telefone != undefined)) {
+        listaFiltrada = usuarios.filter(usuario => usuario.telefone === telefone);
+    } else {
+        listaFiltrada = error;
+    }
+
+    if (listaFiltrada == "") {
+        listaFiltrada = error;
+    }
+
+    res.send(listaFiltrada).end();
 });
 
 // 5. ** Receber Dados com POST **
